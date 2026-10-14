@@ -1,0 +1,4 @@
+nom;module;classement;service_cible
+# Une ligne par opération de l'inventaire qui vous paraît significative.
+# classement : capacite_metier, detail_technique ou doublon
+# service_cible : Risque, Comptes, Client, Notification, TraiterDemandePret, ou aucun

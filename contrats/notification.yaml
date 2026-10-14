@@ -1,0 +1,100 @@
+openapi: 3.0.3
+
+# Contrat du service Notification de BankApp.
+# Aucun code n'existe encore : ce contrat est écrit d'abord (approche « contrat d'abord »).
+# Les TODO sont à compléter à l'étape 2.
+info:
+  title: Service Notification
+  version: 1.0.0
+  description: >
+    Prévient un client par SMS, e-mail ou notification mobile, pour tous les processus de la banque.
+    Chaque envoi est historisé dans la table T_ENVOI de la base NOTIF_DB.
+  x-fiche:
+    famille: TODO
+    role: TODO
+    proprietaire: TODO
+    consommateurs: TODO
+    qualite: TODO
+
+paths:
+  # TODO : le chemin et le nom de l'opération qui demande l'envoi d'un message à un client
+  /notification/TODO:
+    post:
+      operationId: TODO
+      summary: Demander l'envoi d'un message à un client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DemandeNotification'
+      responses:
+        '202':
+          description: L'envoi est pris en charge. Il sera effectué plus tard.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuiviEnvoi'
+              example:
+                idNotification: N-000123
+                statut: EN_ATTENTE
+        '404':
+          description: Le client n'est pas connu de la banque.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erreur:
+                    type: string
+              example:
+                erreur: client inconnu
+
+  /notification/suivreEnvoi:
+    post:
+      operationId: suivreEnvoi
+      summary: Connaître l'état d'un envoi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DemandeSuivi'
+      responses:
+        '200':
+          description: L'état de l'envoi.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuiviEnvoi'
+              example:
+                idNotification: N-000123
+                statut: ENVOYE
+
+components:
+  schemas:
+
+    DemandeNotification:
+      type: object
+      # TODO : les trois champs du message : idClient (forme C-1001), message (1 à 160 caractères)
+      #        et canal (SMS, EMAIL ou PUSH), tous obligatoires
+      properties: {}
+
+    DemandeSuivi:
+      type: object
+      required: [idNotification]
+      properties:
+        idNotification:
+          type: string
+          pattern: '^N-[0-9]{6}$'
+
+    SuiviEnvoi:
+      type: object
+      required: [idNotification, statut]
+      properties:
+        idNotification:
+          type: string
+          pattern: '^N-[0-9]{6}$'
+        statut:
+          type: string
+          enum: [EN_ATTENTE, ENVOYE, ECHEC]

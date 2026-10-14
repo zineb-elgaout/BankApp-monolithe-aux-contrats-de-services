@@ -1,0 +1,32 @@
+# Règles communes de la banque pour tous les contrats de service.
+# Lues par RelecteurContrat. Chaque règle peut être désactivée avec active: false.
+regles:
+
+  fiche-de-service:
+    active: true
+    # La fiche de service (chapitre 2) est écrite dans info.x-fiche du contrat
+    champs: [famille, role, proprietaire, consommateurs, qualite]
+
+  verbe-objet:
+    active: true
+    # Une opération se nomme par un verbe du métier suivi d'un objet : evaluerRisque, suivreEnvoi
+    verbes-metier: [evaluer, notifier, suivre, consulter, enregistrer, debiter, crediter, bloquer,
+                    cloturer, ouvrir, decider, verifier, simuler]
+    verbes-interdits: [get, set, update, delete, create, execute, process, handle, do]
+    # Noms validés par la revue d'architecture : le verbe seul suffit quand l'objet est évident
+    noms-admis: [notifier]
+
+  montant-en-chaine:
+    active: true
+    # Tout champ dont le nom contient l'un de ces mots est un montant : il voyage en chaîne décimale
+    champs: [montant, revenu, solde, plafond]
+
+  erreurs-normalisees:
+    active: true
+    # Toute réponse d'erreur utilise le même schéma, avec un code stable
+    schema: Erreur
+
+  pas-de-detail-interne:
+    active: true
+    # Aucun nom de table, de schéma, de classe ou de technologie dans un contrat
+    motifs: ['\bT_[A-Z]{3,}', '\b[A-Z]+_DB\b', 'DAO\b', 'SELECT ', 'java\.', 'BigDecimal']

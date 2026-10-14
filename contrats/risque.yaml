@@ -1,0 +1,73 @@
+openapi: 3.0.3
+
+# Contrat du service Risque de BankApp.
+#
+# HISTORIQUE : ce fichier a été GÉNÉRÉ AUTOMATIQUEMENT à partir du code Java de l'application Risque
+# (approche « code d'abord »), puis confié à l'équipe d'architecture pour relecture.
+# Les TODO sont à compléter à l'étape 2.
+info:
+  title: Service Risque
+  version: 1.0.0
+  description: Évalue le risque d'un client pour un montant et une durée de prêt donnés.
+  # Fiche de service (chapitre 2) : ce que le contrat ne dit pas, mais que l'architecte doit savoir
+  x-fiche:
+    famille: TODO          # processus, entite ou utilitaire
+    role: TODO             # la responsabilité du service, en une phrase, sans « et »
+    proprietaire: TODO     # l'équipe qui répond du contrat
+    consommateurs: TODO    # la liste des applications qui l'appellent, ex. [Prêts, CRM]
+    qualite: TODO          # la qualité promise, chiffrée
+
+paths:
+  /risque/getScore:
+    post:
+      operationId: getScore
+      summary: Évaluer le risque d'un client pour une demande de prêt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DemandePretDto'
+      responses:
+        '200':
+          description: Le risque est évalué.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evaluation'
+              example:
+                score: 72
+                decision: ACCEPTE
+        # TODO : ajouter la réponse 400, renvoyée quand le message ne respecte pas le contrat
+        #        (schéma Erreur, code MESSAGE_INVALIDE)
+
+components:
+  schemas:
+
+    DemandePretDto:
+      type: object
+      required: [idClient, montant, dureeMois]
+      properties:
+        idClient:
+          type: string
+          # TODO : imposer la forme C-1001 (facette pattern)
+        montant:
+          type: number
+          format: double
+        dureeMois:
+          type: integer
+          # TODO : borner la durée : au moins 6 mois, au plus 360
+
+    Evaluation:
+      type: object
+      required: [score, decision]
+      properties:
+        score:
+          type: integer
+          # TODO : un score va de 0 à 100
+        decision:
+          type: string
+          # TODO : les trois seules décisions possibles
+
+    # TODO : décrire le schéma Erreur commun à toutes les réponses d'erreur :
+    #        un code obligatoire, puis message, champ, regle et recu facultatifs

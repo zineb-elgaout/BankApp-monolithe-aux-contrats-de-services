@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  La demande de prêt du service Risque, en XML.
+  Même contrat que le schéma DemandePretDto de risque.yaml, exprimé en XSD (chapitre 3).
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://bankapp.example/risque/v1"
+           xmlns="http://bankapp.example/risque/v1"
+           elementFormDefault="qualified">
+
+    <xs:simpleType name="IdClient">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="C-[0-9]{4}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Un montant est un décimal exact, avec deux chiffres après la virgule -->
+    <xs:simpleType name="Montant">
+        <xs:restriction base="xs:decimal">
+            <xs:minExclusive value="0"/>
+            <xs:fractionDigits value="2"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="DureeMois">
+        <xs:restriction base="xs:int">
+            <xs:minInclusive value="6"/>
+            <xs:maxInclusive value="360"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="demandePret">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="idClient" type="IdClient"/>
+                <xs:element name="montant" type="Montant"/>
+                <xs:element name="dureeMois" type="DureeMois"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

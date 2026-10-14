@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<demandePret xmlns="http://bankapp.example/risque/v1">
+    <idClient>C-1001</idClient>
+    <montant>20000.00</montant>
+    <dureeMois>2</dureeMois>
+</demandePret>
