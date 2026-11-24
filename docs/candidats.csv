@@ -2,3 +2,18 @@ nom;module;classement;service_cible
 # Une ligne par opération de l'inventaire qui vous paraît significative.
 # classement : capacite_metier, detail_technique ou doublon
 # service_cible : Risque, Comptes, Client, Notification, TraiterDemandePret, ou aucun
+RisqueService.evaluerRisque;risque;capacite_metier;Risque
+MoteurRisque.evaluer;risque-service;doublon;Risque
+CalculateurScore.calculer;risque/interne;doublon;Risque
+ScoreDAO.scoreDeBase;risque/interne;detail_technique;aucun
+CompteService.consulterSolde;comptes;capacite_metier;Comptes
+CompteDAO.getSolde;comptes/interne;detail_technique;aucun
+SimulationMobileService.preAccord;mobile;doublon;Comptes
+MessagerieService.envoyerSms;crm;capacite_metier;Notification
+VirementService.virer;comptes;doublon;Notification
+AppMobileService.envoyerCodeConnexion;mobile;doublon;Notification
+PretService.traiter;prets;capacite_metier;TraiterDemandePret
+ClientService.fiche;crm;capacite_metier;Client
+ClientDAO.getTelephone;crm/interne;detail_technique;aucun
+SimulateurPret.mensualite;prets;capacite_metier;TraiterDemandePret
+ReleveService.releve;comptes;capacite_metier;aucun
