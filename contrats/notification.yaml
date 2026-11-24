@@ -1,13 +1,10 @@
 openapi: 3.0.3
 
 # Contrat du service Notification de BankApp.
-# Aucun code n'existe encore : ce contrat est écrit d'abord (approche « contrat d'abord »).
 info:
   title: Service Notification
   version: 1.0.0
-  description: >
-    Prévient un client par SMS, e-mail ou notification mobile, pour tous les processus de la banque.
-    Chaque envoi est historisé dans la table T_ENVOI de la base NOTIF_DB.
+  description: Prévient un client par SMS, e-mail ou notification mobile, pour tous les processus de la banque.
   x-fiche:
     famille: utilitaire
     role: prévenir un client sur le canal choisi
@@ -36,17 +33,26 @@ paths:
               example:
                 idNotification: N-000123
                 statut: EN_ATTENTE
+        '400':
+          description: Le message ne respecte pas le contrat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+              example:
+                code: MESSAGE_INVALIDE
+                champ: canal
+                regle: enum [SMS, EMAIL, PUSH]
+                recu: FAX
         '404':
           description: Le client n'est pas connu de la banque.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  erreur:
-                    type: string
+                $ref: '#/components/schemas/Erreur'
               example:
-                erreur: client inconnu
+                code: CLIENT_INCONNU
+                message: Aucun client C-9999
 
   /notification/suivreEnvoi:
     post:
@@ -68,6 +74,15 @@ paths:
               example:
                 idNotification: N-000123
                 statut: ENVOYE
+        '404':
+          description: Aucun envoi ne porte cet identifiant.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+              example:
+                code: NOTIFICATION_INCONNUE
+                message: Aucun envoi N-999999
 
 components:
   schemas:
@@ -105,3 +120,17 @@ components:
         statut:
           type: string
           enum: [EN_ATTENTE, ENVOYE, ECHEC]
+
+    Erreur:
+      type: object
+      required: [code]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        champ:
+          type: string
+        regle:
+          type: string
+        recu: {}
