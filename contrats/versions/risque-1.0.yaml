@@ -1,0 +1,112 @@
+openapi: 3.0.3
+
+# Contrat du service Risque de BankApp.
+#
+# HISTORIQUE : ce fichier a été GÉNÉRÉ AUTOMATIQUEMENT à partir du code Java de l'application Risque
+# (approche « code d'abord »), puis confié à l'équipe d'architecture pour relecture.
+info:
+  title: Service Risque
+  version: 1.0.0
+  description: Évalue le risque d'un client pour un montant et une durée de prêt donnés.
+  # Fiche de service (chapitre 2) : ce que le contrat ne dit pas, mais que l'architecte doit savoir
+  x-fiche:
+    famille: entite
+    role: évaluer le risque d'un client pour un prêt donné
+    proprietaire: équipe Risque
+    consommateurs: [Prêts, CRM, Mobile]
+    qualite: réponse en moins de 2 secondes
+
+paths:
+  /risque/evaluerRisque:
+    post:
+      operationId: evaluerRisque
+      summary: Évaluer le risque d'un client pour une demande de prêt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DemandePretDto'
+      responses:
+        '200':
+          description: Le risque est évalué.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evaluation'
+              example:
+                score: 72
+                decision: ACCEPTE
+        '400':
+          description: Le message ne respecte pas le contrat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+              example:
+                code: MESSAGE_INVALIDE
+                champ: dureeMois
+                regle: minimum 6
+                recu: 2
+        '404':
+          description: Le client n'est pas connu de la banque.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+              example:
+                code: CLIENT_INCONNU
+                message: Aucun client C-9999
+        '422':
+          description: Le montant ne peut pas être prêté.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+              example:
+                code: MONTANT_INVALIDE
+                message: Le montant doit être strictement positif
+
+components:
+  schemas:
+
+    DemandePretDto:
+      type: object
+      required: [idClient, montant, dureeMois]
+      properties:
+        idClient:
+          type: string
+          pattern: '^C-[0-9]{4}$'
+        montant:
+          type: string
+          pattern: '^[0-9]+\.[0-9]{2}$'
+        dureeMois:
+          type: integer
+          minimum: 6
+          maximum: 360
+
+    Evaluation:
+      type: object
+      required: [score, decision]
+      properties:
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        decision:
+          type: string
+          enum: [ACCEPTE, REFUSE, A_ETUDIER]
+
+    Erreur:
+      type: object
+      required: [code]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        champ:
+          type: string
+        regle:
+          type: string
+        recu: {}

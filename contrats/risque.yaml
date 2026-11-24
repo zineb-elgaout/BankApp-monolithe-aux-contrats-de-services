@@ -6,7 +6,7 @@ openapi: 3.0.3
 # (approche « code d'abord »), puis confié à l'équipe d'architecture pour relecture.
 info:
   title: Service Risque
-  version: 1.0.0
+  version: 1.1.0
   description: Évalue le risque d'un client pour un montant et une durée de prêt donnés.
   # Fiche de service (chapitre 2) : ce que le contrat ne dit pas, mais que l'architecte doit savoir
   x-fiche:
@@ -37,6 +37,7 @@ paths:
               example:
                 score: 72
                 decision: ACCEPTE
+                motif: Score satisfaisant, aucun incident récent
         '400':
           description: Le message ne respecte pas le contrat.
           content:
@@ -84,6 +85,10 @@ components:
           type: integer
           minimum: 6
           maximum: 360
+        revenuMensuel:
+          type: string
+          pattern: '^[0-9]+\.[0-9]{2}$'
+          description: Revenu mensuel net du client. Optionnel depuis la version 1.1
 
     Evaluation:
       type: object
@@ -96,6 +101,9 @@ components:
         decision:
           type: string
           enum: [ACCEPTE, REFUSE, A_ETUDIER]
+        motif:
+          type: string
+          description: Explication de la décision. Optionnel depuis la version 1.1
 
     Erreur:
       type: object
