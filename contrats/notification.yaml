@@ -2,7 +2,6 @@ openapi: 3.0.3
 
 # Contrat du service Notification de BankApp.
 # Aucun code n'existe encore : ce contrat est écrit d'abord (approche « contrat d'abord »).
-# Les TODO sont à compléter à l'étape 2.
 info:
   title: Service Notification
   version: 1.0.0
@@ -10,17 +9,16 @@ info:
     Prévient un client par SMS, e-mail ou notification mobile, pour tous les processus de la banque.
     Chaque envoi est historisé dans la table T_ENVOI de la base NOTIF_DB.
   x-fiche:
-    famille: TODO
-    role: TODO
-    proprietaire: TODO
-    consommateurs: TODO
-    qualite: TODO
+    famille: utilitaire
+    role: prévenir un client sur le canal choisi
+    proprietaire: équipe Canaux
+    consommateurs: [Prêts, Comptes, CRM, Mobile]
+    qualite: prise en charge en moins de 1 seconde
 
 paths:
-  # TODO : le chemin et le nom de l'opération qui demande l'envoi d'un message à un client
-  /notification/TODO:
+  /notification/notifier:
     post:
-      operationId: TODO
+      operationId: notifier
       summary: Demander l'envoi d'un message à un client
       requestBody:
         required: true
@@ -76,9 +74,18 @@ components:
 
     DemandeNotification:
       type: object
-      # TODO : les trois champs du message : idClient (forme C-1001), message (1 à 160 caractères)
-      #        et canal (SMS, EMAIL ou PUSH), tous obligatoires
-      properties: {}
+      required: [idClient, message, canal]
+      properties:
+        idClient:
+          type: string
+          pattern: '^C-[0-9]{4}$'
+        message:
+          type: string
+          minLength: 1
+          maxLength: 160
+        canal:
+          type: string
+          enum: [SMS, EMAIL, PUSH]
 
     DemandeSuivi:
       type: object

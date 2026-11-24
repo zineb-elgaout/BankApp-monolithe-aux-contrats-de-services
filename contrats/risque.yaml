@@ -4,18 +4,17 @@ openapi: 3.0.3
 #
 # HISTORIQUE : ce fichier a été GÉNÉRÉ AUTOMATIQUEMENT à partir du code Java de l'application Risque
 # (approche « code d'abord »), puis confié à l'équipe d'architecture pour relecture.
-# Les TODO sont à compléter à l'étape 2.
 info:
   title: Service Risque
   version: 1.0.0
   description: Évalue le risque d'un client pour un montant et une durée de prêt donnés.
   # Fiche de service (chapitre 2) : ce que le contrat ne dit pas, mais que l'architecte doit savoir
   x-fiche:
-    famille: TODO          # processus, entite ou utilitaire
-    role: TODO             # la responsabilité du service, en une phrase, sans « et »
-    proprietaire: TODO     # l'équipe qui répond du contrat
-    consommateurs: TODO    # la liste des applications qui l'appellent, ex. [Prêts, CRM]
-    qualite: TODO          # la qualité promise, chiffrée
+    famille: entite
+    role: évaluer le risque d'un client pour un prêt donné
+    proprietaire: équipe Risque
+    consommateurs: [Prêts, CRM, Mobile]
+    qualite: réponse en moins de 2 secondes
 
 paths:
   /risque/getScore:
@@ -38,8 +37,17 @@ paths:
               example:
                 score: 72
                 decision: ACCEPTE
-        # TODO : ajouter la réponse 400, renvoyée quand le message ne respecte pas le contrat
-        #        (schéma Erreur, code MESSAGE_INVALIDE)
+        '400':
+          description: Le message ne respecte pas le contrat.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+              example:
+                code: MESSAGE_INVALIDE
+                champ: dureeMois
+                regle: minimum 6
+                recu: 2
 
 components:
   schemas:
@@ -50,13 +58,14 @@ components:
       properties:
         idClient:
           type: string
-          # TODO : imposer la forme C-1001 (facette pattern)
+          pattern: '^C-[0-9]{4}$'
         montant:
           type: number
           format: double
         dureeMois:
           type: integer
-          # TODO : borner la durée : au moins 6 mois, au plus 360
+          minimum: 6
+          maximum: 360
 
     Evaluation:
       type: object
@@ -64,10 +73,22 @@ components:
       properties:
         score:
           type: integer
-          # TODO : un score va de 0 à 100
+          minimum: 0
+          maximum: 100
         decision:
           type: string
-          # TODO : les trois seules décisions possibles
+          enum: [ACCEPTE, REFUSE, A_ETUDIER]
 
-    # TODO : décrire le schéma Erreur commun à toutes les réponses d'erreur :
-    #        un code obligatoire, puis message, champ, regle et recu facultatifs
+    Erreur:
+      type: object
+      required: [code]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        champ:
+          type: string
+        regle:
+          type: string
+        recu: {}
